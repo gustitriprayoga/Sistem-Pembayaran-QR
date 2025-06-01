@@ -5,7 +5,7 @@ namespace App\Models\Backend;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class MenuVariant extends Model
+class KategoriMenu extends Model
 {
     use HasFactory;
 
@@ -13,6 +13,6 @@ class MenuVariant extends Model
 
     public function menu()
     {
-        return $this->belongsTo(Menu::class);
+        return $this->hasMany(Menu::class, 'kategori_id');
     }
 }

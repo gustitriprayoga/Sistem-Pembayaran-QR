@@ -11,11 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('menu_variants', function (Blueprint $table) {
+        Schema::create('kategori_menus', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('menu_id')->constrained()->onDelete('cascade');
-            $table->enum('variant_name', ['panas', 'dingin']);
-            $table->integer('price');
             $table->timestamps();
         });
     }
@@ -25,6 +22,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('menu_variants');
+        Schema::dropIfExists('kategori_menus');
     }
 };
