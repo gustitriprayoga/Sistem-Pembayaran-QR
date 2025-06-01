@@ -13,6 +13,13 @@ return new class extends Migration
     {
         Schema::create('pengantarans', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('pesanan_id')->constrained('pesanans')->onDelete('cascade');
+            $table->text('alamat');
+            $table->text('catatan')->nullable();
+            $table->integer('biaya_pengiriman')->default(0);
+            $table->enum('status', ['menunggu', 'dikirim', 'terkirim'])->default('menunggu');
+            $table->string('nama_kurir')->nullable();
+            $table->timestamp('terkirim_pada')->nullable();
             $table->timestamps();
         });
     }

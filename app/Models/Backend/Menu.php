@@ -11,12 +11,17 @@ class Menu extends Model
 
     protected $guarded = [];
 
+    // public function kategori()
+    // {
+    //     return $this->belongsTo(KategoriMenu::class, 'kategori_id', 'nama');
+    // }
+
     public function kategori()
     {
-        return $this->belongsTo(KategoriMenu::class, 'kategori_id');
+        return $this->belongsTo(KategoriMenu::class);
     }
 
-    public function varian()
+    public function varianMenu()
     {
         return $this->hasMany(VarianMenu::class, 'menu_id');
     }

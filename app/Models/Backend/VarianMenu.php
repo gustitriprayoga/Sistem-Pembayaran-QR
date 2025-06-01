@@ -8,4 +8,11 @@ use Illuminate\Database\Eloquent\Model;
 class VarianMenu extends Model
 {
     use HasFactory;
+
+    protected $tguarded = [];
+
+    public function menu()
+    {
+        return $this->belongsTo(Menu::class, 'menu_id');
+    }
 }

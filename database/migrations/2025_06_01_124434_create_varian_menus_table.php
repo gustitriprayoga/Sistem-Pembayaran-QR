@@ -13,6 +13,9 @@ return new class extends Migration
     {
         Schema::create('varian_menus', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('menu_id')->constrained('menus')->onDelete('cascade');
+            $table->enum('varian', ['panas', 'dingin']);
+            $table->integer('harga');
             $table->timestamps();
         });
     }
