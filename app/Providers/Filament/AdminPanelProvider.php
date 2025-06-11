@@ -18,6 +18,7 @@ use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use Althinect\FilamentSpatieRolesPermissions\FilamentSpatieRolesPermissionsPlugin;
+use Filament\Facades\Filament;
 use Spatie\Permission\Middleware\RoleMiddleware;
 
 class AdminPanelProvider extends PanelProvider
@@ -59,6 +60,15 @@ class AdminPanelProvider extends PanelProvider
                 \Illuminate\Session\Middleware\StartSession::class,
                 \Illuminate\View\Middleware\ShareErrorsFromSession::class,
                 \App\Http\Middleware\Authenticate::class,
-            ]);
+            ])
+            ->brandName('Tuan Coffe - Panel Admin')
+            ->sidebarCollapsibleOnDesktop()
+            ->bootUsing(function () {
+                Filament::serving(function () {
+                    if (! auth()->user()?->hasRole('admin')) {
+                        abort(403);
+                    }
+                });
+            });;
     }
 }

@@ -194,6 +194,8 @@ return [
         // App\Providers\BroadcastServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\Filament\AdminPanelProvider::class,
+        App\Providers\Filament\KasirPanelProvider::class,
+        App\Providers\Filament\PelangganPanelProvider::class,
         App\Providers\RouteServiceProvider::class,
 
     ],
