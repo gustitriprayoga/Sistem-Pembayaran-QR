@@ -13,10 +13,25 @@ class PenggunaSeeder extends Seeder
      */
     public function run(): void
     {
-        Role::create(['name' => 'admin']);
-        Role::create(['name' => 'kasir']);
-        Role::create(['name' => 'pelayan']);
-        Role::create(['name' => 'pengguna']);
+        Role::create([
+            'name' => 'admin',
+            'guard_name' => 'web'
+        ]);
+
+        Role::create([
+            'name' => 'karyawan',
+            'guard_name' => 'web'
+        ]);
+
+        Role::create([
+            'name' => 'pelayan',
+            'guard_name' => 'web'
+        ]);
+
+        Role::create([
+            'name' => 'pengguna',
+            'guard_name' => 'web'
+        ]);
 
         $admin = \App\Models\User::create([
             'name' => 'Admin',
@@ -25,12 +40,12 @@ class PenggunaSeeder extends Seeder
         ]);
         $admin->assignRole('admin');
 
-        $kasir = \App\Models\User::create([
-            'name' => 'Kasir',
-            'email' => 'kasir@tuan.com',
-            'password' => bcrypt('kasir123'),
+        $karyawan = \App\Models\User::create([
+            'name' => 'karyawan',
+            'email' => 'karyawan@tuan.com',
+            'password' => bcrypt('karyawan123'),
         ]);
-        $kasir->assignRole('kasir');
+        $karyawan->assignRole('karyawan');
 
         $pelayan = \App\Models\User::create([
             'name' => 'Pelayan',
@@ -45,6 +60,5 @@ class PenggunaSeeder extends Seeder
             'password' => bcrypt('pengguna123'),
         ]);
         $pengguna->assignRole('pengguna');
-
     }
 }

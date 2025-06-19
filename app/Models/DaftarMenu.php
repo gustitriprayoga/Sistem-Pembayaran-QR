@@ -13,11 +13,11 @@ class DaftarMenu extends Model
 
     public function kategori()
     {
-        return $this->belongsTo(KategoriMenu::class, 'id_kategori');
+        return $this->belongsTo(KategoriMenu::class, 'kategori_menu_id');
     }
 
     public function varian()
     {
-        return $this->hasMany(VarianMenu::class, 'id_menu');
+        return $this->hasMany(VarianMenu::class, 'daftar_menu_id');
     }
 }

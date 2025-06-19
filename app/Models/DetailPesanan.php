@@ -13,11 +13,11 @@ class DetailPesanan extends Model
 
     public function pesanan()
     {
-        return $this->belongsTo(Pesanan::class, 'id_pesanan');
+        return $this->belongsTo(Pesanan::class, 'pesanan_id');
     }
 
     public function varianMenu()
     {
-        return $this->belongsTo(VarianMenu::class, 'id_varian_menu');
+        return $this->belongsTo(VarianMenu::class, 'varian_menu_id');
     }
 }

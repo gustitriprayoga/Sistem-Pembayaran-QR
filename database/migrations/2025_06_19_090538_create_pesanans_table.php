@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('pesanans', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('id_meja')->constrained('daftar_meja');
-            $table->foreignId('id_pengguna')->nullable()->constrained('pengguna');
+            $table->foreignId('daftar_meja_id')->constrained('daftar_mejas');
+            $table->foreignId('user_id')->nullable()->constrained('users')->onDelete('set null');
             $table->string('nama_pelanggan')->nullable();
             $table->decimal('total_bayar', 10, 2);
             $table->enum('status_pesanan', ['baru', 'diproses', 'selesai', 'dibatalkan'])->default('baru');

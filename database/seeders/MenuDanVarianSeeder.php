@@ -21,7 +21,7 @@ class MenuDanVarianSeeder extends Seeder
 
         // --- MENU KOPI ---
         $kopiSusu = DaftarMenu::create([
-            'id_kategori' => $kopi->id,
+            'kategori_id' => $kopi->id,
             'nama_menu' => 'Kopi Susu',
             'deskripsi' => 'Kopi susu dengan gula aren pilihan.'
         ]);
@@ -31,7 +31,7 @@ class MenuDanVarianSeeder extends Seeder
         ]);
 
         $americano = DaftarMenu::create([
-            'id_kategori' => $kopi->id,
+            'kategori_id' => $kopi->id,
             'nama_menu' => 'Americano',
             'deskripsi' => 'Espresso dengan tambahan air.'
         ]);
@@ -42,7 +42,7 @@ class MenuDanVarianSeeder extends Seeder
 
         // --- MENU NON-KOPI ---
         $tehLemon = DaftarMenu::create([
-            'id_kategori' => $nonKopi->id,
+            'kategori_id' => $nonKopi->id,
             'nama_menu' => 'Teh Lemon',
             'deskripsi' => 'Teh segar dengan perasan lemon.'
         ]);
@@ -53,7 +53,7 @@ class MenuDanVarianSeeder extends Seeder
 
         // --- MENU MAKANAN ---
         $kentang = DaftarMenu::create([
-            'id_kategori' => $makanan->id,
+            'kategori_id' => $makanan->id,
             'nama_menu' => 'Kentang Goreng',
             'deskripsi' => 'Kentang goreng renyah disajikan dengan saus.'
         ]);

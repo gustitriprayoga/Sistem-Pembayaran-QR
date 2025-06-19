@@ -17,6 +17,9 @@ class DatabaseSeeder extends Seeder
             KategoriMenuSeeder::class,
             DaftarMejaSeeder::class,
             MenuDanVarianSeeder::class,
+
+            // Pesanan
+            PesananSeeder::class,
         ]);
     }
 }

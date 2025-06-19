@@ -13,6 +13,6 @@ class DaftarMeja extends Model
 
     public function pesanan()
     {
-        return $this->hasMany(Pesanan::class, 'id_meja');
+        return $this->hasMany(Pesanan::class, 'daftar_meja_id');
     }
 }

@@ -13,6 +13,6 @@ class VarianMenu extends Model
 
     public function menu()
     {
-        return $this->belongsTo(DaftarMenu::class, 'id_menu');
+        return $this->belongsTo(DaftarMenu::class, 'menu_id');
     }
 }
