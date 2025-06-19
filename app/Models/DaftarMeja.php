@@ -8,4 +8,11 @@ use Illuminate\Database\Eloquent\Model;
 class DaftarMeja extends Model
 {
     use HasFactory;
+
+    protected $guarded = [];
+
+    public function pesanan()
+    {
+        return $this->hasMany(Pesanan::class, 'id_meja');
+    }
 }

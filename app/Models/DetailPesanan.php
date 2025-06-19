@@ -8,4 +8,16 @@ use Illuminate\Database\Eloquent\Model;
 class DetailPesanan extends Model
 {
     use HasFactory;
+
+    protected $guarded = [];
+
+    public function pesanan()
+    {
+        return $this->belongsTo(Pesanan::class, 'id_pesanan');
+    }
+
+    public function varianMenu()
+    {
+        return $this->belongsTo(VarianMenu::class, 'id_varian_menu');
+    }
 }

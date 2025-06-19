@@ -13,6 +13,10 @@ return new class extends Migration
     {
         Schema::create('varian_menus', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('id_menu')->constrained('daftar_menu')->onDelete('cascade');
+            $table->string('nama_varian'); // Contoh: Panas, Dingin, Original
+            $table->decimal('harga', 10, 2);
+            $table->boolean('tersedia')->default(true);
             $table->timestamps();
         });
     }
