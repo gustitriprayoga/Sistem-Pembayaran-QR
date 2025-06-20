@@ -6,6 +6,7 @@ use App\Filament\Resources\PesananResource\Pages;
 use App\Filament\Resources\PesananResource\RelationManagers;
 use App\Models\Pesanan;
 use Filament\Forms;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -42,8 +43,10 @@ class PesananResource extends Resource
                         Forms\Components\TextInput::make('id')
                             ->label('ID Pesanan')
                             ->disabled(),
-                        Forms\Components\Select::make('meja.nama_meja')
+                        Select::make('daftar_meja_id')
                             ->label('Meja')
+                            ->options(fn() => \App\Models\DaftarMeja::pluck('nama_meja', 'id'))
+                            ->searchable()
                             ->disabled(),
                         Forms\Components\TextInput::make('nama_pelanggan')
                             ->label('Nama Pelanggan')
@@ -69,30 +72,39 @@ class PesananResource extends Resource
                             ->disabled(),
                     ])->columns(2),
 
-                Forms\Components\Section::make('Rincian Item')
+                Forms\Components\Repeater::make('detailPesanan')
+                    ->relationship('detailPesanan')
+                    ->label(false)
                     ->schema([
-                        Forms\Components\Repeater::make('detailPesanan')
-                            ->relationship('detailPesanan')
-                            ->label(false)
-                            ->schema([
-                                Forms\Components\TextInput::make('varianMenu.menu.nama_menu')
-                                    ->label('Nama Menu')
-                                    ->disabled(),
-                                Forms\Components\TextInput::make('varianMenu.nama_varian')
-                                    ->label('Varian')
-                                    ->disabled(),
-                                Forms\Components\TextInput::make('jumlah')
-                                    ->numeric()
-                                    ->disabled(),
-                                Forms\Components\TextInput::make('harga_saat_pesan')
-                                    ->label('Harga Satuan')
-                                    ->formatStateUsing(fn($state) => 'Rp ' . number_format($state, 0, ',', '.'))
-                                    ->disabled(),
-                            ])
-                            ->columns(4)
-                            ->addable(false) // Sembunyikan tombol "Add"
-                            ->deletable(false) // Sembunyikan tombol "Delete"
+                        Forms\Components\TextInput::make('nama_menu')
+                            // ->label('Nama Menu')
+                            ->disabled()
+                            ->formatStateUsing(function ($state, $record) {
+                                // dd($record->varianMenu->daftarMenu->nama_menu);
+                                return $record->varianMenu->daftarMenu->nama_menu ?? '-';
+                            }),
+
+                        Forms\Components\TextInput::make('Varian_menu')
+                            // ->label('Varian Menu')
+                            ->disabled()
+                            ->formatStateUsing(function ($state, $record) {
+                                // dd($record->varianMenu->daftarMenu->nama_menu);
+                                return $record->varianMenu->nama_varian ?? '-';
+                            }),
+
+                        Forms\Components\TextInput::make('jumlah')
+                            ->numeric()
+                            ->disabled(),
+
+                        Forms\Components\TextInput::make('harga_saat_pesan')
+                            ->label('Harga Satuan')
+                            ->formatStateUsing(fn($state) => 'Rp ' . number_format($state, 0, ',', '.'))
+                            ->disabled(),
                     ])
+                    ->columns(4)
+                    ->addable(false)
+                    ->deletable(false)
+
             ]);
     }
 

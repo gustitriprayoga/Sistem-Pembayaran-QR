@@ -15,4 +15,9 @@ class VarianMenu extends Model
     {
         return $this->belongsTo(DaftarMenu::class);
     }
+
+    public function daftarMenu()
+    {
+        return $this->belongsTo(DaftarMenu::class);
+    }
 }

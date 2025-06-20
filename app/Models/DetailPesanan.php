@@ -26,6 +26,6 @@ class DetailPesanan extends Model
 
     public function menu()
     {
-        return $this->belongsTo(DaftarMenu::class, 'daftar_menu_id'); // Mengakses menu melalui varianMenu
+        return $this->belongsTo(DaftarMenu::class); // Mengakses menu melalui varianMenu
     }
 }

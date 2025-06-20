@@ -20,4 +20,9 @@ class DaftarMenu extends Model
     {
         return $this->hasMany(VarianMenu::class);
     }
+
+    public function detailPesanan()
+    {
+        return $this->hasMany(DetailPesanan::class);
+    }
 }

@@ -13,12 +13,12 @@ class Pesanan extends Model
 
     public function meja()
     {
-        return $this->belongsTo(DaftarMeja::class, 'daftar_meja_id');
+        return $this->belongsTo(DaftarMeja::class);
     }
 
     public function mejas()
     {
-        return $this->belongsTo(DaftarMeja::class, 'daftar_meja_id');
+        return $this->belongsTo(DaftarMeja::class);
     }
 
     public function user()
