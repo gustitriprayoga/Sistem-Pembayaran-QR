@@ -9,20 +9,25 @@ class Pesanan extends Model
 {
     use HasFactory;
 
-    protected $guarded = [];
+    protected $guarded = [''];
 
     public function meja()
     {
         return $this->belongsTo(DaftarMeja::class, 'daftar_meja_id');
     }
 
+    public function mejas()
+    {
+        return $this->belongsTo(DaftarMeja::class, 'daftar_meja_id');
+    }
+
     public function user()
     {
-        return $this->belongsTo(User::class,'user_id');
+        return $this->belongsTo(User::class);
     }
 
     public function detailPesanan()
     {
-        return $this->hasMany(DetailPesanan::class, 'pesanan_id');
+        return $this->hasMany(DetailPesanan::class);
     }
 }

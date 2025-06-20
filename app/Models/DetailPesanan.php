@@ -11,13 +11,21 @@ class DetailPesanan extends Model
 
     protected $guarded = [];
 
-    public function pesanan()
-    {
-        return $this->belongsTo(Pesanan::class, 'pesanan_id');
-    }
-
     public function varianMenu()
     {
-        return $this->belongsTo(VarianMenu::class, 'varian_menu_id');
+        return $this->belongsTo(VarianMenu::class);
+    }
+
+    /**
+     * Relasi kembali ke Pesanan (opsional, tapi baik untuk ada).
+     */
+    public function pesanan()
+    {
+        return $this->belongsTo(Pesanan::class);
+    }
+
+    public function menu()
+    {
+        return $this->belongsTo(DaftarMenu::class, 'daftar_menu_id'); // Mengakses menu melalui varianMenu
     }
 }

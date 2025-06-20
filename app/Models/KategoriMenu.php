@@ -14,6 +14,6 @@ class KategoriMenu extends Model
     public function daftarMenu()
     {
         // Relasi ke model DaftarMenu
-        return $this->hasMany(DaftarMenu::class, 'kategori_menu_id');
+        return $this->hasMany(DaftarMenu::class);
     }
 }
