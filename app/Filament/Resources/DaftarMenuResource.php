@@ -24,7 +24,7 @@ class DaftarMenuResource extends Resource
             ->schema([
                 Forms\Components\Section::make('Informasi Menu')
                     ->schema([
-                        Forms\Components\Select::make('kategori_menu_id')
+                        Forms\Components\Select::make('kategori_id')
                             ->relationship('kategori', 'nama_kategori')
                             ->searchable()
                             ->preload()
