@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('daftar_mejas', function (Blueprint $table) {
             $table->id();
             $table->string('nama_meja')->unique();
+            $table->enum('status_meja', ['tersedia', 'tidak_tersedia'])->default('tersedia');
             $table->timestamps();
         });
     }

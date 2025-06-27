@@ -8,6 +8,7 @@ use App\Models\Pesanan;
 use Filament\Forms;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Form;
+use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -114,19 +115,33 @@ class PesananResource extends Resource
             ->defaultSort('created_at', 'desc') // Pesanan terbaru di atas
             ->columns([
                 Tables\Columns\TextColumn::make('id')->label('ID Pesanan')->searchable(),
-                Tables\Columns\TextColumn::make('meja.nama_meja')->badge(),
+                Tables\Columns\TextColumn::make('daftarMeja.nama_meja')->badge(),
+                Tables\Columns\TextColumn::make('daftarMeja.status_meja')->badge(),
                 Tables\Columns\TextColumn::make('nama_pelanggan')
                     ->label('Pelanggan')
                     ->default('Pengguna Terdaftar')
                     ->description(fn(Pesanan $record): string => $record->user->name ?? ''),
                 Tables\Columns\TextColumn::make('total_bayar')->money('IDR')->sortable(),
-                Tables\Columns\BadgeColumn::make('status_pesanan') // <-- Badge untuk Status!
-                    ->colors([
-                        'primary' => 'baru',
-                        'warning' => 'diproses',
-                        'success' => 'selesai',
-                        'danger' => 'dibatalkan',
-                    ]),
+                Tables\Columns\SelectColumn::make('status_pesanan')
+                    ->label('Status Pesanan')
+                    ->options([
+                        'baru' => 'Baru',
+                        'diproses' => 'Diproses',
+                        'selesai' => 'Selesai',
+                        'dibatalkan' => 'Dibatalkan',
+                    ])
+                    ->afterStateUpdated(function ($record, $state) {
+                        // Logika untuk mengubah status meja
+                        $meja = $record->meja;
+                        if ($meja) {
+                            $newStatusMeja = 'tersedia'; // Default
+                            if ($state === 'diproses') {
+                                $newStatusMeja = 'tidak tersedia';
+                            }
+                            $meja->update(['status_meja' => $newStatusMeja]);
+                        }
+                        Notification::make()->title('Status pesanan #' . $record->id . ' diperbarui')->success()->send();
+                    }),
                 Tables\Columns\BadgeColumn::make('status_bayar')
                     ->colors([
                         'warning' => 'menunggu',

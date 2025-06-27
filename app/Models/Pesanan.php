@@ -11,6 +11,11 @@ class Pesanan extends Model
 
     protected $guarded = [''];
 
+    public function daftarMeja()
+    {
+        return $this->belongsTo(DaftarMeja::class);
+    }
+
     public function meja()
     {
         return $this->belongsTo(DaftarMeja::class);
