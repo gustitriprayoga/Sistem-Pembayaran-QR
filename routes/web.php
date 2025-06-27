@@ -1,6 +1,9 @@
 <?php
 
 use App\Livewire\HomePage;
+use App\Livewire\CartPage;
+use App\Livewire\CheckoutPage; // <-- Import
+use App\Livewire\OrderSuccessPage; // <-- Import
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -19,3 +22,7 @@ use Illuminate\Support\Facades\Route;
 // });
 
 Route::get('/', HomePage::class)->name('home');
+// Route untuk halaman keranjang belanja
+Route::get('/keranjang', CartPage::class)->name('cart.index');
+Route::get('/checkout', CheckoutPage::class)->name('checkout.index');
+Route::get('/pesanan-berhasil/{pesanan}', OrderSuccessPage::class)->name('order.success');

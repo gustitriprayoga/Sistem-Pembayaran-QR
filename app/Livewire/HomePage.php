@@ -2,94 +2,92 @@
 
 namespace App\Livewire;
 
+use App\Models\DaftarMeja;
 use App\Models\DaftarMenu;
 use App\Models\KategoriMenu;
 use App\Models\VarianMenu;
-use App\Services\CartService; // Asumsi Anda punya service untuk cart, jika tidak bisa diganti dengan session
+use App\Services\CartService;
 use Illuminate\Support\Facades\DB;
 use Livewire\Attributes\Computed;
 use Livewire\Component;
 
 class HomePage extends Component
 {
-    /**
-     * @var \Illuminate\Database\Eloquent\Collection
-     * Menyimpan semua kategori untuk filter.
-     */
+    // ... (properti lainnya tetap sama) ...
     public $categories = [];
-
-    /**
-     * @var \Illuminate\Database\Eloquent\Collection
-     * Menyimpan 3 produk terlaris.
-     */
     public $bestSellers = [];
-
-    /**
-     * @var int|null
-     * Menyimpan ID kategori yang sedang aktif dipilih.
-     */
     public ?int $selectedCategoryId = null;
-
-    /**
-     * @var \App\Models\DaftarMenu|null
-     * Menyimpan data menu yang dipilih untuk ditampilkan di modal.
-     */
     public ?DaftarMenu $selectedMenu = null;
+    public ?int $nomorMeja = null;
+    public ?int $selectedVarianIdInModal = null;
+
 
     /**
      * Method ini dijalankan saat komponen pertama kali dimuat.
-     * Mengambil data awal yang dibutuhkan halaman.
      */
     public function mount()
     {
-        // 1. Ambil semua kategori untuk ditampilkan sebagai tombol filter.
+        // Logika untuk mendeteksi meja (tetap sama)
+        if (request()->has('meja')) {
+            $mejaId = request()->query('meja');
+            $meja = DaftarMeja::find($mejaId);
+            if ($meja) {
+                session(['meja_id' => $meja->id]);
+            } else {
+                session()->forget('meja_id');
+            }
+        }
+        if (session()->has('meja_id')) {
+            $this->nomorMeja = session('meja_id');
+        }
+
+        // Ambil kategori (tetap sama)
         $this->categories = KategoriMenu::all();
 
-        // 2. Logika untuk mengambil produk paling laris (best sellers).
-        $bestSellingVariantIds = DB::table('detail_pesanans')
+        // ======================================================================
+        //      PERBAIKAN FINAL: Menggunakan Subquery Join untuk Best Seller
+        // ======================================================================
+        // Langkah 1: Buat subquery untuk menghitung total penjualan per varian
+        $bestSellingSubquery = DB::table('detail_pesanans')
             ->select('varian_menu_id', DB::raw('SUM(jumlah) as total_terjual'))
-            ->groupBy('varian_menu_id')
-            ->orderBy('total_terjual', 'desc')
-            ->limit(3) // Ambil 3 varian teratas
-            ->get();
+            ->groupBy('varian_menu_id');
 
-        // 3. Ambil model VarianMenu berdasarkan ID terlaris dan gabungkan dengan jumlah terjual.
-        $idsToFetch = $bestSellingVariantIds->pluck('varian_menu_id');
-
-        $this->bestSellers = VarianMenu::whereIn('id', $idsToFetch)
-            // ======================================================================
-            //      INI DIA PERBAIKANNYA: Filter data yang tidak punya menu induk
-            // ======================================================================
-            ->whereHas('daftarMenu')
-            ->with('daftarMenu.kategori') // Eager load untuk performa
-            ->get()
-            ->map(function ($variant) use ($bestSellingVariantIds) {
-                // Tambahkan properti 'total_terjual' ke setiap model varian
-                $variant->total_terjual = $bestSellingVariantIds->firstWhere('varian_menu_id', $variant->id)->total_terjual;
-                return $variant;
+        // Langkah 2: Jalankan query utama dan gabungkan (join) dengan hasil subquery
+        $this->bestSellers = VarianMenu::query()
+            // Pilih semua kolom dari varian menu, dan kolom total_terjual dari subquery
+            ->select('varian_menus.*', 'sales.total_terjual')
+            // Gabungkan dengan subquery yang kita beri nama alias 'sales'
+            ->joinSub($bestSellingSubquery, 'sales', function ($join) {
+                $join->on('varian_menus.id', '=', 'sales.varian_menu_id');
             })
-            ->sortByDesc('total_terjual'); // Urutkan kembali karena whereIn tidak menjamin urutan
+            // Pastikan hanya mengambil varian yang punya menu induk yang valid
+            ->whereHas('daftarMenu')
+            // Urutkan berdasarkan total penjualan yang paling banyak
+            ->orderBy('sales.total_terjual', 'desc')
+            // Eager load relasi untuk ditampilkan di view
+            ->with('daftarMenu.kategori')
+            // Ambil 3 teratas
+            ->limit(3)
+            ->get();
     }
 
     /**
-     * Properti ini akan menghitung ulang daftar menu setiap kali filter kategori berubah.
-     * Menggunakan #[Computed] untuk caching hasil query agar lebih efisien.
+     * Properti computed untuk daftar menu (tetap sama)
      */
     #[Computed]
     public function menus()
     {
         return DaftarMenu::query()
             ->where('tersedia', true)
-            // Terapkan filter hanya jika $selectedCategoryId memiliki nilai
             ->when($this->selectedCategoryId, function ($query) {
                 $query->where('kategori_id', $this->selectedCategoryId);
             })
-            ->with(['varian', 'kategori']) // Eager load varian dan kategori
+            ->with(['varian', 'kategori'])
             ->get();
     }
 
     /**
-     * Aksi untuk memfilter produk berdasarkan kategori yang diklik.
+     * Aksi filter kategori (tetap sama)
      */
     public function filterByCategory(?int $categoryId)
     {
@@ -97,29 +95,29 @@ class HomePage extends Component
     }
 
     /**
-     * Aksi untuk menyiapkan data saat produk dipilih untuk dilihat detailnya.
+     * Aksi untuk memilih produk dan membuka modal (diperbarui).
      */
     public function selectProduct($menuId)
     {
-        $this->selectedMenu = DaftarMenu::with('varian')->find($menuId);
+        $menu = DaftarMenu::with('varian')->find($menuId);
+        $this->selectedMenu = $menu;
 
-        // Kirim event ke browser untuk memberitahu JavaScript agar membuka modal Bootstrap
+        // PERBARUAN: Secara otomatis pilih varian pertama sebagai default saat modal dibuka.
+        if ($menu && $menu->varian->isNotEmpty()) {
+            $this->selectedVarianIdInModal = $menu->varian->first()->id;
+        }
+
+        // Kirim event ke browser untuk membuka modal
         $this->dispatch('open-product-modal');
     }
 
     /**
-     * Aksi saat tombol '+' atau 'Add to Cart' diklik.
+     * Aksi untuk menambah item dari luar modal (tetap sama)
      */
     public function addToCart($varianMenuId)
     {
-        // Di sini Anda bisa memanggil Service atau handle logika session secara langsung.
-        // Contoh menggunakan Service:
         CartService::add($varianMenuId);
-
-        // Kirim event untuk didengarkan oleh komponen lain (misal: ikon keranjang di navbar)
         $this->dispatch('cart-updated');
-
-        // Tampilkan notifikasi sukses menggunakan sistem notifikasi Filament
         \Filament\Notifications\Notification::make()
             ->title('Berhasil ditambahkan ke keranjang!')
             ->success()
@@ -127,11 +125,24 @@ class HomePage extends Component
     }
 
     /**
-     * Method untuk me-render view dan layout.
+     * Metode BARU untuk menambah item DARI DALAM MODAL.
+     */
+    public function addSelectedVarianToCart()
+    {
+        // Cek apakah ada varian yang dipilih
+        if ($this->selectedVarianIdInModal) {
+            $this->addToCart($this->selectedVarianIdInModal);
+
+            // Kirim event untuk menutup modal setelah berhasil ditambahkan
+            $this->dispatch('close-product-modal');
+        }
+    }
+
+    /**
+     * Method render (tetap sama)
      */
     public function render()
     {
-        // Pastikan memanggil layout yang benar
         return view('livewire.home-page')->layout('layouts.customer-app');
     }
 }

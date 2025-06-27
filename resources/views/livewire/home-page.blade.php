@@ -89,24 +89,26 @@
         </section>
     </div>
 
-    {{-- Modal untuk Detail Produk --}}
+    {{-- Modal untuk Detail Produk (Dengan Perbaikan) --}}
     <div wire:ignore.self class="modal fade" id="productModal" tabindex="-1" aria-labelledby="productModalLabel"
         aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             @if ($selectedMenu)
                 <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="productModalLabel">{{ $selectedMenu->nama_menu }}</h5>
+                    <div class="modal-header border-0">
+                        <h5 class="modal-title fw-bold" id="productModalLabel">{{ $selectedMenu->nama_menu }}</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        <img src="{{ Storage::url($selectedMenu->url_gambar) }}" class="img-fluid rounded mb-3"
-                            alt="{{ $selectedMenu->nama_menu }}">
+                        <img src="{{ !empty($selectedMenu->url_gambar) && Storage::disk('public')->exists($selectedMenu->url_gambar) ? Storage::url($selectedMenu->url_gambar) : asset('frontend/produk/default-produk.png') }}"
+                            class="img-fluid rounded mb-3" alt="{{ $selectedMenu->nama_menu }}">
                         <p>{{ $selectedMenu->deskripsi }}</p>
                         <hr>
                         <div class="mb-3">
-                            <label for="varianSelect" class="form-label">Pilih Varian:</label>
-                            <select class="form-select" id="varianSelect">
+                            <label for="varianSelect" class="form-label fw-semibold">Pilih Varian:</label>
+
+                            {{-- PERBAIKAN: Tambahkan wire:model.live ke <select> --}}
+                            <select class="form-select" id="varianSelect" wire:model.live="selectedVarianIdInModal">
                                 @foreach ($selectedMenu->varian as $varian)
                                     <option value="{{ $varian->id }}">
                                         {{ $varian->nama_varian }} - Rp
@@ -116,9 +118,19 @@
                             </select>
                         </div>
                     </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
-                        <button type="button" class="btn btn-primary">Tambah ke Keranjang</button>
+                    <div class="modal-footer border-0">
+                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Tutup</button>
+
+                        {{-- PERBAIKAN: Tambahkan wire:click ke tombol utama --}}
+                        <button type="button" class="btn btn-primary px-4" wire:click="addSelectedVarianToCart"
+                            wire:loading.attr="disabled">
+                            <span wire:loading.remove wire:target="addSelectedVarianToCart">
+                                Tambah ke Keranjang
+                            </span>
+                            <span wire:loading wire:target="addSelectedVarianToCart">
+                                Menambahkan...
+                            </span>
+                        </button>
                     </div>
                 </div>
             @endif
@@ -129,11 +141,17 @@
 @push('scripts')
     <script>
         document.addEventListener('livewire:initialized', () => {
-            const productModal = new bootstrap.Modal(document.getElementById('productModal'));
+            const productModalElement = document.getElementById('productModal');
+            const productModal = new bootstrap.Modal(productModalElement);
 
-            // Dengar event dari Livewire untuk membuka modal
+            // Dengar event dari Livewire untuk MEMBUKA modal
             Livewire.on('open-product-modal', () => {
                 productModal.show();
+            });
+
+            // PERBARUAN: Dengar event dari Livewire untuk MENUTUP modal
+            Livewire.on('close-product-modal', () => {
+                productModal.hide();
             });
         });
     </script>

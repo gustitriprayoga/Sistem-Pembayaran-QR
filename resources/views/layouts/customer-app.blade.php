@@ -77,9 +77,10 @@
     {{-- Navbar --}}
     <nav class="navbar navbar-expand-lg bg-body-tertiary sticky-top">
         <div class="container">
-            <a class="navbar-brand fw-bold" href="#">Tuan Coffee</a>
+            <a class="navbar-brand fw-bold" href="/">Tuan Coffee</a>
             <div class="d-flex">
-                <a href="#" class="btn btn-primary">My Basket</a>
+                {{-- GANTI TOMBOL LAMA DENGAN INI --}}
+                @livewire('cart-counter')
             </div>
         </div>
     </nav>
