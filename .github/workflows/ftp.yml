@@ -13,4 +13,6 @@ jobs:
       with:
         server: ftp.kodai.id
         username: tuan-coffee@tuan-coffee.laratest.my.id
-        password: ${{ secrets.ftp_password }}
+        password: ${{ secrets.password }}
+        protocol: ftp
+        port: 21 # todo replace with your web hosts ftps port
