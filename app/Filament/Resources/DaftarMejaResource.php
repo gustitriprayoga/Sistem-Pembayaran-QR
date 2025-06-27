@@ -51,22 +51,30 @@ class DaftarMejaResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
-                Action::make('Lihat QR Code') // <-- Aksi Kustom!
+                Action::make('Lihat QR Code')
                     ->icon('heroicon-o-qr-code')
+                    ->modalSubmitAction(false)
+                    ->modalCancelActionLabel('Tutup')
+                    // Method modalContent sekarang akan me-render sebuah view
                     ->modalContent(function (DaftarMeja $record): \Illuminate\Contracts\View\View {
                         $qrCodeUrl = null;
-                        if ($record->qr_code_path && Storage::disk('public')->exists($record->qr_code_path)) {
-                            $qrCodeUrl = Storage::url($record->qr_code_path);
+                        // Hasilkan URL lengkap untuk meja ini
+                        $fullUrl = url('/?meja=' . $record->id);
+
+                        // Cek apakah file QR code sudah ada
+                        if ($record->qr_code_path && \Illuminate\Support\Facades\Storage::disk('public')->exists($record->qr_code_path)) {
+                            $qrCodeUrl = \Illuminate\Support\Facades\Storage::url($record->qr_code_path);
                         }
 
-                        // Panggil file view dan kirim data ke dalamnya
+                        // Panggil file view dan KIRIM SEMUA DATA yang diperlukan ke dalamnya
                         return view('filament.modals.qr-code', [
-                            'qrCodeUrl' => $qrCodeUrl,
                             'namaMeja' => $record->nama_meja,
+                            'qrCodeUrl' => $qrCodeUrl,
+                            'fullUrl' => $fullUrl, // <-- Pastikan baris ini ada
                         ]);
                     })
-                    ->modalSubmitAction(false) // Sembunyikan tombol submit
-                    ->modalCancelActionLabel('Tutup'),
+                    ->visible(fn(DaftarMeja $record): bool => !empty($record->qr_code_path)),
+
                 Action::make('generateUlang')
                     ->label('Generate Ulang QR')
                     ->icon('heroicon-o-arrow-path') // Icon refresh
