@@ -8,7 +8,6 @@ use App\Models\Pesanan;
 use Filament\Forms;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Form;
-use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -25,7 +24,7 @@ class PesananResource extends Resource
     public static function canViewAny(): bool
     {
         // Admin dan Karyawan bisa melihat daftar pesanan
-        return auth()->user()->hasAnyRole(['admin', 'karyawan']);
+        return auth()->user()->hasAnyRole(['admin']);
     }
 
     // Karyawan tidak bisa mengedit atau menghapus, hanya admin
@@ -122,26 +121,13 @@ class PesananResource extends Resource
                     ->default('Pengguna Terdaftar')
                     ->description(fn(Pesanan $record): string => $record->user->name ?? ''),
                 Tables\Columns\TextColumn::make('total_bayar')->money('IDR')->sortable(),
-                Tables\Columns\SelectColumn::make('status_pesanan')
-                    ->label('Status Pesanan')
-                    ->options([
-                        'baru' => 'Baru',
-                        'diproses' => 'Diproses',
-                        'selesai' => 'Selesai',
-                        'dibatalkan' => 'Dibatalkan',
-                    ])
-                    ->afterStateUpdated(function ($record, $state) {
-                        // Logika untuk mengubah status meja
-                        $meja = $record->meja;
-                        if ($meja) {
-                            $newStatusMeja = 'tersedia'; // Default
-                            if ($state === 'diproses') {
-                                $newStatusMeja = 'tidak tersedia';
-                            }
-                            $meja->update(['status_meja' => $newStatusMeja]);
-                        }
-                        Notification::make()->title('Status pesanan #' . $record->id . ' diperbarui')->success()->send();
-                    }),
+                Tables\Columns\BadgeColumn::make('status_pesanan') // <-- Badge untuk Status!
+                    ->colors([
+                        'primary' => 'baru',
+                        'warning' => 'diproses',
+                        'success' => 'selesai',
+                        'danger' => 'dibatalkan',
+                    ]),
                 Tables\Columns\BadgeColumn::make('status_bayar')
                     ->colors([
                         'warning' => 'menunggu',

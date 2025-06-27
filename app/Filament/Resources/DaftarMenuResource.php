@@ -10,6 +10,7 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Filament\Forms\Components\SpatieMediaLibraryFileUpload; // Jika pakai Spatie Media Library
+use Illuminate\Database\Eloquent\Model;
 
 class DaftarMenuResource extends Resource
 {
@@ -17,6 +18,18 @@ class DaftarMenuResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-clipboard-document-list';
     protected static ?string $navigationGroup = 'Manajemen Menu';
     protected static ?string $pluralModelLabel = 'Daftar Menu';
+
+    public static function canCreate(): bool
+    {
+        // Hanya Admin yang bisa membuat menu baru
+        return auth()->user()->hasRole('admin');
+    }
+
+    public static function canEdit(Model $record): bool
+    {
+        // Hanya Admin yang bisa mengedit menu
+        return auth()->user()->hasRole('admin');
+    }
 
     public static function form(Form $form): Form
     {

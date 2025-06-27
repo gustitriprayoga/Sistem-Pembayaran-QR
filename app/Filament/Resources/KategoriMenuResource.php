@@ -17,6 +17,24 @@ class KategoriMenuResource extends Resource
     protected static ?string $navigationGroup = 'Manajemen Menu'; // Grup Navigasi
     protected static ?string $pluralModelLabel = 'Kategori Menu';
 
+    public static function canCreate(): bool
+    {
+        // Hanya Admin yang bisa membuat menu baru
+        return auth()->user()->hasRole('admin');
+    }
+
+    public static function canEdit($record): bool
+    {
+        // Hanya Admin yang bisa mengedit menu
+        return auth()->user()->hasRole('admin');
+    }
+
+    public static function canDelete($record): bool
+    {
+        // Hanya Admin yang bisa menghapus menu
+        return auth()->user()->hasRole('admin');
+    }
+
     public static function form(Form $form): Form
     {
         return $form

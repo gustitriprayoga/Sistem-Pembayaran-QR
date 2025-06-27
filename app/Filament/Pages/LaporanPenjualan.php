@@ -25,6 +25,11 @@ class LaporanPenjualan extends Page implements HasForms, HasTable
     protected static string $view = 'filament.pages.laporan-penjualan';
     protected static ?int $navigationSort = 4; // Atur urutan di sidebar
 
+    public static function canAccess(): bool
+    {
+        return auth()->user()->hasRole('admin');
+    }
+
     // Properti untuk menyimpan tanggal filter, #[Live] akan me-refresh halaman saat nilainya berubah
     #[Live]
     public ?string $startDate = null;

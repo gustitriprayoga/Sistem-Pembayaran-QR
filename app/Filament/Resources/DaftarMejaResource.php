@@ -25,6 +25,14 @@ class DaftarMejaResource extends Resource
     protected static ?string $navigationGroup = 'Manajemen Operasional';
     protected static ?string $pluralModelLabel = 'Daftar Meja';
 
+    public static function canViewAny(): bool
+    {
+        // Hanya Admin yang bisa melihat resource ini di navigasi
+        return auth()->user()->hasRole('admin');
+    }
+
+
+
     public static function form(Form $form): Form
     {
         return $form
