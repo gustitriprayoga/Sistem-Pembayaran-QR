@@ -23,7 +23,7 @@ class CreateDaftarMeja extends CreateRecord
         // Buat QR code dalam format SVG (lebih jernih)
         $qrCode = QrCode::format('svg')
             ->size(300)
-            ->generate(url('/pesan?meja=' . $meja->id));
+            ->generate(url('/?meja=' . $meja->id));
 
         // Simpan file QR code ke dalam storage
         Storage::disk('public')->put($path, $qrCode);

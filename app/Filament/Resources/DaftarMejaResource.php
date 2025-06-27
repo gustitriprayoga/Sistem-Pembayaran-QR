@@ -81,7 +81,7 @@ class DaftarMejaResource extends Resource
 
                         $qrCode = QrCode::format('svg')
                             ->size(300)
-                            ->generate(url('/pesan?meja=' . $record->id));
+                            ->generate(url('/?meja=' . $record->id));
 
                         Storage::disk('public')->put($path, $qrCode);
 
