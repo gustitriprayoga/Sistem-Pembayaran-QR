@@ -5,7 +5,7 @@
             class="row align-items-center justify-content-center text-center text-md-start hero-section p-4 p-md-5 mb-5">
             <div class="col-md-6">
                 <h1 class="display-4 fw-bolder text-body-emphasis">TUAN COFFEE<br>PESEN KOPI MUDAH HANYA DISINI</h1>
-                <p class="lead text-body-secondary">Dapatkan askses cepat dengan cara memilih meja disini.</p>
+                <p class="lead text-body-secondary">Dapatkan askses cepat memesan menu dengan cara Scan QR yang ada dimeja kamu!.</p>
                 <button class="btn btn-lg btn-primary">PILIH MEJA TERELBIH DAHULU</button>
             </div>
             <div class="col-md-4 text-center d-none d-md-block">
