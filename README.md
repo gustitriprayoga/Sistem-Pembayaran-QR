@@ -147,3 +147,5 @@ Beberapa ide fitur yang bisa dikembangkan di masa depan:
 * [ ] Sistem Poin & Loyalty untuk pelanggan terdaftar.
 * [ ] Notifikasi real-time ke panel admin saat pesanan baru masuk menggunakan WebSockets.
 * [ ] Fitur reservasi meja.
+* [ ] Fitur reservasi meja.
+
