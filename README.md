@@ -1,4 +1,4 @@
-# Sistem Pemesanan QR Code - Tuan Coffee
+# Sistem Pemesanan QR Code - Tuan Coffee V1
 
 ![Laravel](https://img.shields.io/badge/Laravel-10-FF2D20?style=for-the-badge&logo=laravel)
 ![Livewire](https://img.shields.io/badge/Livewire-3-4d56e0?style=for-the-badge)
