@@ -5,8 +5,25 @@
             class="row align-items-center justify-content-center text-center text-md-start hero-section p-4 p-md-5 mb-5">
             <div class="col-md-6">
                 <h1 class="display-4 fw-bolder text-body-emphasis">TUAN COFFEE<br>PESEN KOPI MUDAH HANYA DISINI</h1>
-                <p class="lead text-body-secondary">Dapatkan askses cepat memesan menu dengan cara Scan QR yang ada dimeja kamu!.</p>
-                <button class="btn btn-lg btn-primary">PILIH MEJA TERELBIH DAHULU</button>
+                <p class="lead text-body-secondary">Dapatkan askses cepat memesan menu dengan cara Scan QR yang ada
+                    dimeja kamu!.</p>
+
+                {{-- MODIFIKASI DIMULAI: Cek apakah meja sudah terdeteksi menggunakan $nomorMeja --}}
+                @if (empty($nomorMeja))
+                    {{-- Jika meja belum terdeteksi, tampilkan tombol untuk mulai Scan QR --}}
+                    <button class="btn btn-lg btn-primary" wire:click="openQrScanner">
+                        OPEN CAMERA TO SCAN QR
+                    </button>
+                    <p class="text-muted mt-2">Tekan tombol di atas untuk memulai pemindaian QR.</p>
+                @else
+                    {{-- Jika meja sudah terdeteksi, tampilkan pesan selamat datang --}}
+                    <p class="lead fw-bold text-success">
+                        ✅ Meja Terpilih: Meja #{{ $nomorMeja }}
+                    </p>
+                    <p class="text-body-secondary">Anda siap memesan! Gulir ke bawah untuk melihat menu.</p>
+                @endif
+                {{-- MODIFIKASI SELESAI --}}
+
             </div>
             <div class="col-md-4 text-center d-none d-md-block">
                 {{-- Anda bisa menaruh gambar besar di sini --}}
@@ -143,14 +160,33 @@
             const productModalElement = document.getElementById('productModal');
             const productModal = new bootstrap.Modal(productModalElement);
 
-            // Dengar event dari Livewire untuk MEMBUKA modal
+            // Dengar event dari Livewire untuk MEMBUKA modal produk
             Livewire.on('open-product-modal', () => {
                 productModal.show();
             });
 
-            // PERBARUAN: Dengar event dari Livewire untuk MENUTUP modal
+            // Dengar event dari Livewire untuk MENUTUP modal produk
             Livewire.on('close-product-modal', () => {
                 productModal.hide();
+            });
+
+            // BARU: Dengar event dari Livewire untuk membuka scanner QR
+            Livewire.on('open-qr-scanner-modal', () => {
+                // Di sini Anda dapat menambahkan logika untuk mengarahkan pengguna ke halaman/modal pemindaian QR
+                // Karena kita tidak memiliki rute/komponen scanner QR yang sebenarnya,
+                // kita akan menggunakan alert sebagai placeholder dan kemudian mengarahkan ke halaman home
+                const confirmed = confirm(
+                    'Fungsi Scan QR Terpicu! Di lingkungan nyata, ini akan membuka kamera untuk memindai kode QR meja. Tekan OK untuk mensimulasikan pemindaian berhasil (misalnya, kembali ke beranda).'
+                    );
+
+                if (confirmed) {
+                    // Simulasikan pemindaian berhasil dan redirect ke home atau halaman menu
+                    // Jika Anda memiliki rute untuk scanner QR (misalnya /scan-qr), Anda bisa mengarahkannya ke sana.
+                    // Contoh: window.location.href = '/scan-qr';
+
+                    // Untuk tujuan demonstrasi dan tetap berada di halaman home:
+                    window.location.reload();
+                }
             });
         });
     </script>

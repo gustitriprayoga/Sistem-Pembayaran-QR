@@ -13,11 +13,11 @@ use Livewire\Component;
 
 class HomePage extends Component
 {
-    // ... (properti lainnya tetap sama) ...
     public $categories = [];
     public $bestSellers = [];
     public ?int $selectedCategoryId = null;
     public ?DaftarMenu $selectedMenu = null;
+    // Properti yang menyimpan ID meja yang terdeteksi dari sesi/URL
     public ?int $nomorMeja = null;
     public ?int $selectedVarianIdInModal = null;
 
@@ -27,52 +27,44 @@ class HomePage extends Component
      */
     public function mount()
     {
-        // Logika untuk mendeteksi meja (tetap sama)
+        // Logika untuk mendeteksi meja dari URL (?meja=...)
         if (request()->has('meja')) {
             $mejaId = request()->query('meja');
             $meja = DaftarMeja::find($mejaId);
             if ($meja) {
+                // Simpan ID meja ke dalam sesi jika valid
                 session(['meja_id' => $meja->id]);
             } else {
                 session()->forget('meja_id');
             }
         }
+        // Ambil ID meja dari sesi
         if (session()->has('meja_id')) {
             $this->nomorMeja = session('meja_id');
         }
 
-        // Ambil kategori (tetap sama)
+        // Ambil kategori
         $this->categories = KategoriMenu::all();
 
-        // ======================================================================
-        //      PERBAIKAN FINAL: Menggunakan Subquery Join untuk Best Seller
-        // ======================================================================
-        // Langkah 1: Buat subquery untuk menghitung total penjualan per varian
+        // Mengambil Best Seller
         $bestSellingSubquery = DB::table('detail_pesanans')
             ->select('varian_menu_id', DB::raw('SUM(jumlah) as total_terjual'))
             ->groupBy('varian_menu_id');
 
-        // Langkah 2: Jalankan query utama dan gabungkan (join) dengan hasil subquery
         $this->bestSellers = VarianMenu::query()
-            // Pilih semua kolom dari varian menu, dan kolom total_terjual dari subquery
             ->select('varian_menus.*', 'sales.total_terjual')
-            // Gabungkan dengan subquery yang kita beri nama alias 'sales'
             ->joinSub($bestSellingSubquery, 'sales', function ($join) {
                 $join->on('varian_menus.id', '=', 'sales.varian_menu_id');
             })
-            // Pastikan hanya mengambil varian yang punya menu induk yang valid
             ->whereHas('daftarMenu')
-            // Urutkan berdasarkan total penjualan yang paling banyak
             ->orderBy('sales.total_terjual', 'desc')
-            // Eager load relasi untuk ditampilkan di view
             ->with('daftarMenu.kategori')
-            // Ambil 3 teratas
             ->limit(3)
             ->get();
     }
 
     /**
-     * Properti computed untuk daftar menu (tetap sama)
+     * Properti computed untuk daftar menu.
      */
     #[Computed]
     public function menus()
@@ -87,7 +79,7 @@ class HomePage extends Component
     }
 
     /**
-     * Aksi filter kategori (tetap sama)
+     * Aksi filter kategori.
      */
     public function filterByCategory(?int $categoryId)
     {
@@ -95,14 +87,14 @@ class HomePage extends Component
     }
 
     /**
-     * Aksi untuk memilih produk dan membuka modal (diperbarui).
+     * Aksi untuk memilih produk dan membuka modal.
      */
     public function selectProduct($menuId)
     {
         $menu = DaftarMenu::with('varian')->find($menuId);
         $this->selectedMenu = $menu;
 
-        // PERBARUAN: Secara otomatis pilih varian pertama sebagai default saat modal dibuka.
+        // Secara otomatis pilih varian pertama sebagai default saat modal dibuka.
         if ($menu && $menu->varian->isNotEmpty()) {
             $this->selectedVarianIdInModal = $menu->varian->first()->id;
         }
@@ -112,7 +104,18 @@ class HomePage extends Component
     }
 
     /**
-     * Aksi untuk menambah item dari luar modal (tetap sama)
+     * Metode BARU: Mengirim event untuk membuka fungsionalitas QR Scanner.
+     * Metode ini dipanggil saat tombol "OPEN CAMERA TO SCAN QR" ditekan.
+     */
+    public function openQrScanner()
+    {
+        // Kirim event untuk memberitahu JavaScript agar mengarahkan ke halaman/modal QR Scanner.
+        // Asumsi rute pemindaian QR adalah '/scan-qr'. Jika berbeda, sesuaikan di JavaScript.
+        $this->dispatch('open-qr-scanner-modal');
+    }
+
+    /**
+     * Aksi untuk menambah item dari luar modal (tanpa opsi varian).
      */
     public function addToCart($varianMenuId)
     {
@@ -125,7 +128,7 @@ class HomePage extends Component
     }
 
     /**
-     * Metode BARU untuk menambah item DARI DALAM MODAL.
+     * Metode untuk menambah item DARI DALAM MODAL.
      */
     public function addSelectedVarianToCart()
     {
@@ -139,7 +142,7 @@ class HomePage extends Component
     }
 
     /**
-     * Method render (tetap sama)
+     * Method render.
      */
     public function render()
     {
