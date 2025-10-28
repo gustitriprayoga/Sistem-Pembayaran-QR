@@ -99,6 +99,9 @@
 
     {{-- Script untuk interaksi modal --}}
     @stack('scripts')
+
+    @include('sweetalert::alert')
+
 </body>
 
 </html>
