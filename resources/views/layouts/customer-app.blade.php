@@ -70,6 +70,8 @@
             font-size: 0.8rem;
         }
     </style>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 
 <body class="antialiased">
@@ -101,6 +103,7 @@
     @stack('scripts')
 
     @include('sweetalert::alert')
+    @include('sweetalert::alert', ['cdn' => "https://cdn.jsdelivr.net/npm/sweetalert2@9"])
 
 </body>
 

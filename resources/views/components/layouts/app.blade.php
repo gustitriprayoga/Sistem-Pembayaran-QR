@@ -17,6 +17,8 @@
 
         @filamentStyles
         @vite('resources/css/app.css')
+
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     </head>
 
     <body class="antialiased">
@@ -35,6 +37,7 @@
         @vite('resources/js/app.js')
 
         @include('sweetalert::alert')
+        @include('sweetalert::alert', ['cdn' => "https://cdn.jsdelivr.net/npm/sweetalert2@9"])
 
     </body>
 </html>
