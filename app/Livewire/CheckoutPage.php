@@ -5,6 +5,7 @@ namespace App\Livewire;
 use App\Services\CartService;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
+use RealRashid\SweetAlert\Facades\Alert; // Import Facade SweetAlert
 
 class CheckoutPage extends Component
 {
@@ -41,7 +42,20 @@ class CheckoutPage extends Component
         $this->total = CartService::getTotal();
         $this->tableNumber = session('meja_id');
 
-        if ($this->cartItems->isEmpty() || !$this->tableNumber) {
+        // Modifikasi Logika Pengecekan Keranjang
+        if ($this->cartItems->isEmpty()) {
+            // Jika keranjang kosong, kirim SweetAlert Error dan redirect
+            Alert::error('Keranjang Kosong', 'Keranjang belanja Anda kosong.')->persistent(true);
+            return $this->redirect('/', navigate: true);
+        }
+
+        // Modifikasi Logika Pengecekan Meja (Menggunakan SweetAlert Error)
+        if (!$this->tableNumber) {
+            // Jika meja belum terdeteksi, kirim SweetAlert Error
+            Alert::error('Meja Belum Dipilih', 'Anda harus memindai QR code meja terlebih dahulu sebelum melanjutkan ke pembayaran.')
+                ->persistent(true); // Opsi: buat notif tetap ada sampai ditutup manual
+
+            // Redirect ke halaman utama
             return $this->redirect('/', navigate: true);
         }
 
@@ -57,6 +71,13 @@ class CheckoutPage extends Component
     {
         $this->validate();
 
+        // Cek lagi untuk memastikan meja tidak hilang di tengah proses
+        if (!$this->tableNumber) {
+            // Kirim notifikasi error SweetAlert dan hentikan proses
+            Alert::error('Kesalahan Sesi', 'Terjadi kesalahan. Mohon pindai QR code meja Anda kembali.')->persistent(true);
+            return;
+        }
+
         // Panggil service checkout dengan metode pembayaran yang dipilih
         $pesanan = CartService::checkout(
             paymentMethod: $this->paymentMethod,
@@ -64,9 +85,15 @@ class CheckoutPage extends Component
         );
 
         if ($pesanan) {
+            // Kirim notifikasi sukses SweetAlert dan redirect
+            Alert::success('Pesanan Berhasil Dibuat!', 'Terima kasih. Pesanan Anda sedang diproses.')
+                ->persistent(true);
+
             return $this->redirect(route('order.success', ['pesanan' => $pesanan->id]), navigate: true);
         } else {
-            // Handle kegagalan
+            // Handle kegagalan checkout
+            Alert::error('Gagal Membuat Pesanan', 'Terjadi kesalahan saat memproses pesanan Anda. Silakan coba lagi.')->persistent(true);
+            return;
         }
     }
 

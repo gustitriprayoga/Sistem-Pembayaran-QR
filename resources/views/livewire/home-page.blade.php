@@ -8,11 +8,11 @@
                 <p class="lead text-body-secondary">Dapatkan askses cepat memesan menu dengan cara Scan QR yang ada
                     dimeja kamu!.</p>
 
-                {{-- MODIFIKASI DIMULAI: Cek apakah meja sudah terdeteksi menggunakan $nomorMeja --}}
+                {{-- Cek apakah meja sudah terdeteksi menggunakan $nomorMeja --}}
                 @if (empty($nomorMeja))
-                    {{-- Jika meja belum terdeteksi, tampilkan tombol untuk mulai Scan QR --}}
+                    {{-- Tombol dengan teks baru yang memicu Livewire event --}}
                     <button class="btn btn-lg btn-primary" wire:click="openQrScanner">
-                        OPEN CAMERA TO SCAN QR
+                        SCAN DISINI
                     </button>
                     <p class="text-muted mt-2">Tekan tombol di atas untuk memulai pemindaian QR.</p>
                 @else
@@ -22,7 +22,6 @@
                     </p>
                     <p class="text-body-secondary">Anda siap memesan! Gulir ke bawah untuk melihat menu.</p>
                 @endif
-                {{-- MODIFIKASI SELESAI --}}
 
             </div>
             <div class="col-md-4 text-center d-none d-md-block">
@@ -105,7 +104,11 @@
         </section>
     </div>
 
-    {{-- Modal untuk Detail Produk (Dengan Perbaikan) --}}
+    {{-- Input file tersembunyi untuk memicu kamera/scan QR --}}
+    {{-- CATATAN PENTING: Pemicuan kamera pada mobile browser SANGAT sensitif terhadap event dan harus dilakukan sesegera mungkin --}}
+    <input type="file" id="qrScannerInput" accept="image/*" capture="environment" style="display:none;">
+
+    {{-- Modal untuk Detail Produk --}}
     <div wire:ignore.self class="modal fade" id="productModal" tabindex="-1" aria-labelledby="productModalLabel"
         aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
@@ -159,6 +162,7 @@
         document.addEventListener('livewire:initialized', () => {
             const productModalElement = document.getElementById('productModal');
             const productModal = new bootstrap.Modal(productModalElement);
+            const qrScannerInput = document.getElementById('qrScannerInput');
 
             // Dengar event dari Livewire untuk MEMBUKA modal produk
             Livewire.on('open-product-modal', () => {
@@ -170,22 +174,27 @@
                 productModal.hide();
             });
 
-            // BARU: Dengar event dari Livewire untuk membuka scanner QR
+            // Perbaikan: Dengar event dari Livewire untuk memicu kamera/scan QR
             Livewire.on('open-qr-scanner-modal', () => {
-                // Di sini Anda dapat menambahkan logika untuk mengarahkan pengguna ke halaman/modal pemindaian QR
-                // Karena kita tidak memiliki rute/komponen scanner QR yang sebenarnya,
-                // kita akan menggunakan alert sebagai placeholder dan kemudian mengarahkan ke halaman home
-                const confirmed = confirm(
-                    'Fungsi Scan QR Terpicu! Di lingkungan nyata, ini akan membuka kamera untuk memindai kode QR meja. Tekan OK untuk mensimulasikan pemindaian berhasil (misalnya, kembali ke beranda).'
-                    );
+                // Memicu klik pada input file tersembunyi
+                // Ini adalah cara standar (meski tidak selalu sempurna) untuk memicu kamera di mobile browser.
+                qrScannerInput.click();
+            });
 
-                if (confirmed) {
-                    // Simulasikan pemindaian berhasil dan redirect ke home atau halaman menu
-                    // Jika Anda memiliki rute untuk scanner QR (misalnya /scan-qr), Anda bisa mengarahkannya ke sana.
-                    // Contoh: window.location.href = '/scan-qr';
+            // Opsional: Listener untuk memproses hasil scan dari file yang dipilih
+            qrScannerInput.addEventListener('change', function(e) {
+                if (e.target.files.length > 0) {
+                    const file = e.target.files[0];
+                    // TODO: Di sini, tambahkan integrasi dengan library QR scanner JavaScript (misalnya, jsQR)
+                    // untuk memproses file (gambar) yang diambil dari kamera.
 
-                    // Untuk tujuan demonstrasi dan tetap berada di halaman home:
-                    window.location.reload();
+                    console.log('Gambar/QR Code diterima. Perlu logika untuk membaca QR dari file.');
+                    alert(
+                        "QR Code diterima. Silakan lanjutkan implementasi logika pemindaian QR di sisi klien.");
+
+                    // Setelah ID meja berhasil dipindai dan diverifikasi, Anda akan me-redirect pengguna
+                    // ke URL beranda dengan query parameter 'meja':
+                    // window.location.href = `/?meja=HASIL_SCAN_ID_MEJA`;
                 }
             });
         });
