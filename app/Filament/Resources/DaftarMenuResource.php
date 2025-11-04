@@ -62,7 +62,7 @@ class DaftarMenuResource extends Resource
                         Forms\Components\Repeater::make('varian') // <-- Repeater untuk relasi!
                             ->relationship()
                             ->schema([
-                                Forms\Components\TextInput::make('nama_varian')->required(),
+                                Forms\Components\TextInput::make('nama_varian')->placeholder('panas/dingin')->required(),
                                 Forms\Components\TextInput::make('harga')
                                     ->label('Harga')
                                     ->numeric() // Hanya menerima input angka
