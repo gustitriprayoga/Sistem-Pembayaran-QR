@@ -50,7 +50,7 @@
                                 Bayar Langsung ke Kasir
                             </label>
                         </div>
-                        <div class="form-check border rounded-2 p-3 mb-2">
+                        {{-- <div class="form-check border rounded-2 p-3 mb-2">
                             <input class="form-check-input" type="radio" name="paymentMethod" id="payTransfer" value="transfer" wire:model="paymentMethod">
                             <label class="form-check-label fw-semibold" for="payTransfer">
                                 Transfer Bank (BCA)
@@ -61,7 +61,7 @@
                             <label class="form-check-label fw-semibold" for="payEwallet">
                                 E-Wallet (QRIS)
                             </label>
-                        </div>
+                        </div> --}}
                         @error('paymentMethod') <div class="text-danger small mt-1">{{ $message }}</div> @enderror
                     </div>
                     {{-- === AKHIR BAGIAN BARU === --}}
