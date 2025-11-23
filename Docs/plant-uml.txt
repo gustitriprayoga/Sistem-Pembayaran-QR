@@ -1,0 +1,62 @@
+@startuml tuan-coffee_class_diagram
+hide circle
+skinparam linetype ortho
+
+entity DaftarMeja {
+  + id : bigint <<PK>>
+  --
+  + nama_meja : varchar(255)
+  + status_meja : enum
+}
+
+entity KategoriMenu {
+  + id : bigint <<PK>>
+  --
+  + nama_kategori : varchar(100)
+}
+
+entity DaftarMenu {
+  + id : bigint <<PK>>
+  --
+  + kategori_id : bigint <<FK>>
+  + nama_menu : varchar(255)
+  + tersedia : tinyint(1)
+}
+
+entity VarianMenu {
+  + id : bigint <<PK>>
+  --
+  + daftar_menu_id : bigint <<FK>>
+  + nama_varian : varchar(255)
+  + harga : decimal(10,2)
+  + tersedia : tinyint(1)
+}
+
+entity Pesanan {
+  + id : bigint <<PK>>
+  --
+  + daftar_meja_id : bigint <<FK>>
+  + user_id : bigint <<FK>>
+  + total_bayar : decimal(10,2)
+  + status_pesanan : enum
+  + status_bayar : enum
+}
+
+entity DetailPesanan {
+  + id : bigint <<PK>>
+  --
+  + pesanan_id : bigint <<FK>>
+  + varian_menu_id : bigint <<FK>>
+  + jumlah : int
+  + harga_saat_pesan : decimal(10,2)
+}
+
+' Hubungan (Associations)
+' Multiplisitas: ||--o{ (One-to-Many), ||--|| (One-to-One), }|--o{ (Many-to-Many via intermediate table)
+
+DaftarMeja "1" -- "0..*" Pesanan : ditempati
+DaftarMenu "1" -- "1..*" VarianMenu : memiliki
+Pesanan "1" -- "1..*" DetailPesanan : berisi
+VarianMenu "1" -- "0..*" DetailPesanan : dipesan
+
+@enduml
